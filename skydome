@@ -43,6 +43,9 @@ msg() {
         alert)
             printf "[e] ${msgtxt}\n" >&2
             ;;
+        secret)
+            printf "[S] ${msgtxt}\n"
+            ;;
         *)
             printf "[@] ${msgtxt}\n" >&2
             ;;

@@ -19,3 +19,8 @@ storage "consul" {
   disable_clustering = "${disable_clustering}"
   service_tags = "${service_tags}"
 }
+
+# statsd
+telemetry {
+  statsd_address = "${statsd_exporter_ip}:9125"
+}

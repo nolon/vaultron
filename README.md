@@ -29,11 +29,11 @@ When Vaultron is successfully formed, the output looks like this:
 ```
 [=] Form Vaultron! ...
 [=] Terraform has been successfully initialized!
-[=] Vault Docker image version:     0.9.0
-[=] Consul Docker image version:    1.0.2
-[=] Terraform plan: 11 to add, 0 to change, 0 to destroy.
-[=] Terraform apply complete! resources: 11 added, 0 changed, 0 destroyed.
-[^] Vaultron formed
+[=] Vault Docker image version:      0.10.0
+[=] Consul Docker image version:     1.0.6
+[=] Terraform plan: 15 to add, 0 to change, 0 to destroy.
+[=] Terraform apply complete! resources: 15 added, 0 changed, 0 destroyed.
+[^] Vaultron formed!
 ```
 
 You are now almost ready interact with `vault` and `consul` CLI utilities or the Vault or Consul HTTP APIs.
@@ -42,19 +42,21 @@ Take a moment to verify that all of the Docker containers are indeed live:
 
 ```
 $ docker ps -a
-CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                                                                                                                                                                                NAMES
-a61b0f5f2ddd        ca10038bed41        "vault server -log-l…"   58 seconds ago       Up 57 seconds       0.0.0.0:8201->8200/tcp                                                                                                                                                               vault_oss_server_1
-f0f4ed7142e6        ca10038bed41        "vault server -log-l…"   58 seconds ago       Up 57 seconds       0.0.0.0:8202->8200/tcp                                                                                                                                                               vault_oss_server_2
-509d04db2357        ca10038bed41        "vault server -log-l…"   58 seconds ago       Up 57 seconds       0.0.0.0:8200->8200/tcp                                                                                                                                                               vault_oss_server_0
-3a7a5d37166f        5f4915f05e27        "consul agent -confi…"   About a minute ago   Up About a minute   8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_client_2
-c12dd6d4b63e        5f4915f05e27        "consul agent -confi…"   About a minute ago   Up About a minute   8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_client_0
-e21c778cf94a        5f4915f05e27        "consul agent -confi…"   About a minute ago   Up About a minute   8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_client_1
-88b83353e3be        5f4915f05e27        "consul agent -serve…"   About a minute ago   Up About a minute   8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_server_1
-68ee71fe0cc6        5f4915f05e27        "consul agent -serve…"   About a minute ago   Up About a minute   8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_server_2
-63cc6b9eb5c3        5f4915f05e27        "consul agent -serve…"   About a minute ago   Up About a minute   0.0.0.0:8300-8302->8300-8302/tcp, 0.0.0.0:8500->8500/tcp, 0.0.0.0:8555->8555/tcp, 0.0.0.0:8301-8302->8301-8302/udp, 8600/tcp, 8600/udp, 0.0.0.0:8600->53/tcp, 0.0.0.0:8600->53/udp   consul_oss_server_0
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                                                                                                                                                                                NAMES
+72fc72d26d6d        2d9787f3b752        "vault server -log-l…"   6 minutes ago       Up 6 minutes        0.0.0.0:8200->8200/tcp                                                                                                                                                               vault_oss_server_0
+3c24a50fa0fa        2d9787f3b752        "vault server -log-l…"   6 minutes ago       Up 6 minutes        0.0.0.0:8202->8200/tcp                                                                                                                                                               vault_oss_server_2
+609c87aa7feb        2d9787f3b752        "vault server -log-l…"   6 minutes ago       Up 6 minutes        0.0.0.0:8201->8200/tcp                                                                                                                                                               vault_oss_server_1
+3e62750a4af9        5f4915f05e27        "consul agent -confi…"   6 minutes ago       Up 6 minutes        8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_client_2
+a9eaf1e2820f        5f4915f05e27        "consul agent -confi…"   6 minutes ago       Up 6 minutes        8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_client_1
+9d94b3edc461        5f4915f05e27        "consul agent -confi…"   6 minutes ago       Up 6 minutes        8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_client_0
+07c1de57506b        5f4915f05e27        "consul agent -serve…"   6 minutes ago       Up 6 minutes        8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_server_2
+e94dd7139f3f        5f4915f05e27        "consul agent -serve…"   6 minutes ago       Up 6 minutes        8300-8302/tcp, 8500/tcp, 8301-8302/udp, 8600/tcp, 8600/udp                                                                                                                           consul_oss_server_1
+d165de762d73        5f4915f05e27        "consul agent -serve…"   6 minutes ago       Up 7 minutes        0.0.0.0:8300-8302->8300-8302/tcp, 0.0.0.0:8500->8500/tcp, 0.0.0.0:8555->8555/tcp, 0.0.0.0:8301-8302->8301-8302/udp, 8600/tcp, 8600/udp, 0.0.0.0:8600->53/tcp, 0.0.0.0:8600->53/udp   consul_oss_server_0
+b5c046eea6fe        76ee92c26ff8        "/run.sh"                6 minutes ago       Up 7 minutes        0.0.0.0:3000->3000/tcp                                                                                                                                                               vaultron_grafana
+07f902497357        4123840b8599        "/sbin/my_init"          6 minutes ago       Up 7 minutes        0.0.0.0:80->80/tcp, 0.0.0.0:2003-2004->2003-2004/tcp, 8080/tcp, 0.0.0.0:2023-2024->2023-2024/tcp, 0.0.0.0:8126->8126/tcp, 8125/tcp, 0.0.0.0:8125->8125/udp                           vaultron_statsd
 ```
 
-Then, export the necessary environment variables:
+Then, export the necessary environment variables for CLI interaction with Consul and Vault containers:
 
 ```
 $ export CONSUL_CACERT="$(pwd)/red_lion/tls/ca-bundle.pem"
@@ -79,7 +81,7 @@ See the TLS by Default section for more details on handling Vaultron's Intermedi
 
 ### What's Next?
 
-If you are new to Vault, then using Vaultron is a nice way to get quickly acquainted! Please begin by checking out the official [Vault Getting Started documentation](https://www.vaultproject.io/intro/getting-started/install.html).
+If you are new to Vault, then using Vaultron is a nice way to get quickly acquainted. Please begin by checking out the official [Vault Getting Started documentation](https://www.vaultproject.io/intro/getting-started/install.html).
 
 You can follow along from the [Your First Secret](https://www.vaultproject.io/intro/getting-started/first-secret.html) page onwards after initializing, unsealing, and authenticating with the root token.
 
@@ -110,10 +112,12 @@ If you are already familiar with Vault, but would like to save time by rapidly i
 If you are familiar with Terraform you can also use Terraform commands instead, but you'll need to manually specify the `CONSUL_HTTP_ADDR` and `VAULT_ADDR` environment variables before you can access either the Consul or Vault instances:
 
 ```
+$ export CONSUL_CACERT="$(pwd)/red_lion/tls/ca-bundle.pem"
 $ export CONSUL_HTTP_ADDR="127.0.0.1:8500"
 $ export CONSUL_HTTP_SSL=true
-$ export VAULT_ADDR="https://127.0.0.1:8200"
 $ export CONSUL_HTTP_TOKEN="vaultron-forms-and-eats-all-the-tacos-in-town"
+$ export VAULT_ADDR="https://127.0.0.1:8200"
+$ export VAULT_CA_CERT="$(pwd)/black_lion/tls/ca-bundle.pem"
 ```
 
 ## What's in the Box?
@@ -203,13 +207,13 @@ $ . ./ion_darts
 [^] Exported Vaultron environment variables!
 
 $ consul members
-Node                 Address          Status  Type    Build  Protocol  DC
-consul_oss_client_0  172.17.0.6:8301  alive   client  0.7.5  2         arus
-consul_oss_client_1  172.17.0.7:8301  alive   client  0.7.5  2         arus
-consul_oss_client_2  172.17.0.5:8301  alive   client  0.7.5  2         arus
-consul_oss_server_0  172.17.0.2:8301  alive   server  0.7.5  2         arus
-consul_oss_server_1  172.17.0.3:8301  alive   server  0.7.5  2         arus
-consul_oss_server_2  172.17.0.4:8301  alive   server  0.7.5  2         arus
+Node                 Address          Status  Type    Build  Protocol  DC    Segment
+consul_oss_server_0  172.17.0.4:8301  alive   server  1.0.6  2         arus  <all>
+consul_oss_server_1  172.17.0.5:8301  alive   server  1.0.6  2         arus  <all>
+consul_oss_server_2  172.17.0.6:8301  alive   server  1.0.6  2         arus  <all>
+consul_oss_client_0  172.17.0.7:8301  alive   client  1.0.6  2         arus  <default>
+consul_oss_client_1  172.17.0.8:8301  alive   client  1.0.6  2         arus  <default>
+consul_oss_client_2  172.17.0.9:8301  alive   client  1.0.6  2         arus  <default>
 ```
 
 Be sure to always use the same versions of Consul and Vault for both the CLI binaries on your host system and the container image.
@@ -226,9 +230,9 @@ Additionally Consul DNS API is also published from the first Consul server at `l
 $ dig -p 8600 @localhost consul.service.consul
 ...
 ;; ANSWER SECTION:
-consul.service.consul.  0 IN  A 172.17.0.3
-consul.service.consul.  0 IN  A 172.17.0.2
-consul.service.consul.  0 IN  A 172.17.0.4
+consul.service.consul.  0   IN  A   172.17.0.4
+consul.service.consul.  0   IN  A   172.17.0.6
+consul.service.consul.  0   IN  A   172.17.0.5
 ```
 
 or
@@ -236,7 +240,7 @@ or
 ```
 $ dig -p 8600 @localhost active.vault.service.consul
 ;; ANSWER SECTION:
-active.vault.service.consul. 0  IN  A 172.17.0.5
+active.vault.service.consul. 0  IN  A   172.17.0.7
 ```
 
 or
@@ -299,18 +303,36 @@ Here is a tree showing the directory structure for a Consul server:
 ```
 └── consul
     └── consul_oss_server_0
-        ├── config
-        │   └── extra_config.hcl
-        └── data
-            ├── checkpoint-signature
-            ├── node-id
-            ├── raft
-            │   ├── peers.info
-            │   ├── raft.db
-            │   └── snapshots
-            └── serf
-                ├── local.snapshot
-                └── remote.snapshot
+        ├── config
+        │   ├── common_config.json
+        │   ├── graphite-health.json
+        │   └── graphite-service.json
+        └── data
+            ├── checkpoint-signature
+            ├── node-id
+            ├── raft
+            │   ├── peers.info
+            │   ├── raft.db
+            │   └── snapshots
+            └── serf
+                ├── local.snapshot
+                └── remote.snapshot
+```
+
+#### Saving a Snapshot
+
+If you'd like to save an atomic snapshot of **all your Vault and Consul data**, you can do so at any time with the `consul snapshot save` command:
+
+```
+$ consul snapshot save vaultron-`date +"%Y-%m-%dT%H:%M:%SZ"`.snap
+Saved and verified snapshot to index 450
+```
+
+Likwise, you can restore the snapshot with `consul snapshot restore`:
+
+```
+$ consul snapshot restore vaultron-2018-04-11T13:10:21Z.snap
+Restored snapshot
 ```
 
 ### What Are The Default TTL Values?

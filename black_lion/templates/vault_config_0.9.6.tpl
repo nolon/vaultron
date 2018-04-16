@@ -27,7 +27,7 @@ max_lease_ttl = "50000h"       # 2083 days
 # Plugin path
 plugin_directory = "/vault/plugins"
 
-# statsd → graphite → grafana (Yellow Lion)
+# statsd
 telemetry {
-  statsd_address = "${statsd_ip}:8125"
+  statsd_address = "${statsd_exporter_ip}:9125"
 }

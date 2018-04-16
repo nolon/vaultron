@@ -140,22 +140,22 @@ variable "consul_custom_instance_count" {
   default = "0"
 }
 
-# statsd, graphite, and Grafana variables
+# Yellow Lion variables
 
-# Set TF_VAR_statsd_version to set this
-variable "grafana_version" {
+# Set TF_VAR_prometheus_version to set this
+variable "prometheus_version" {
   default = "latest"
 }
 
-# Set TF_VAR_statsd_version to set this
-variable "statsd_version" {
+# Set TF_VAR_statsd_exporter_version to set this
+variable "statsd_exporter_version" {
   default = "latest"
 }
 
 module "telemetry" {
   source                       = "yellow_lion"
-  grafana_version              = "${var.grafana_version}"
-  statsd_version               = "${var.statsd_version}"
+  prometheus_version           = "${var.prometheus_version}"
+  statsd_exporter_version      = "${var.statsd_exporter_version}"
 }
 
 module "consul_cluster" {
@@ -173,7 +173,7 @@ module "consul_cluster" {
   consul_oss_instance_count    = "${var.consul_oss_instance_count}"
   consul_custom                = "${var.consul_custom}"
   consul_custom_instance_count = "${var.consul_custom_instance_count}"
-  statsd_ip                    = "${module.telemetry.statsd_graphite_ip}"
+  statsd_exporter_ip           = "${module.telemetry.statsd_exporter_ip}"
 }
 
 module "vaultron" {
@@ -191,5 +191,5 @@ module "vaultron" {
   consul_client_ips            = ["${module.consul_cluster.consul_oss_client_ips}"]
   vault_custom_config_template = "${var.vault_custom_config_template}"
   vault_server_log_level       = "${var.vault_server_log_level}"
-  statsd_ip                    = "${module.telemetry.statsd_graphite_ip}"
+  statsd_exporter_ip           = "${module.telemetry.statsd_exporter_ip}"
 }

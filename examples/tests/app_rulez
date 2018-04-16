@@ -25,6 +25,10 @@ fi
 
 APPRULEZ=$(openssl rand -hex 4)
 
+if ! [ -d ./tmp ]; then
+  mkdir tmp;
+fi
+
 check_vault() {
   if command nc; then
     PORT_CHECK="nc -z locahost 8200";

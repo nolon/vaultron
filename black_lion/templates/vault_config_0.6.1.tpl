@@ -15,3 +15,8 @@ backend "consul" {
   scheme = "https"
   path = "vault/"
 }
+
+# statsd
+telemetry {
+  statsd_address = "${statsd_exporter_ip}:9125"
+}

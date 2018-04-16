@@ -36,7 +36,7 @@ variable "consul_custom_instance_count" {}
 variable "consul_oss" {}
 variable "consul_oss_instance_count" {}
 
-variable "statsd_ip" {}
+variable "statsd_exporter_ip" {}
 
 # This is the official Consul Docker image that Vaultron uses by default.
 # See also: https://hub.docker.com/_/consul/
@@ -67,21 +67,21 @@ data "template_file" "consul_oss_server_common_config" {
 
 # Graphite service definition
 
-data "template_file" "graphite_service_definitiion" {
-  template = "${file("${path.module}/templates/graphite-service.json.tpl")}"
-
-  vars {
-    statsd_ip        = "${var.statsd_ip}"
-  }
-}
-
-data "template_file" "graphite_health_check_definition" {
-  template = "${file("${path.module}/templates/graphite-health.json.tpl")}"
-
-  vars {
-    statsd_ip        = "${var.statsd_ip}"
-  }
-}
+#data "template_file" "graphite_service_definitiion" {
+#  template = "${file("${path.module}/templates/graphite-service.json.tpl")}"
+#
+#  vars {
+#    statsd_ip        = "${var.statsd_ip}"
+#  }
+#}
+#
+#data "template_file" "graphite_health_check_definition" {
+#  template = "${file("${path.module}/templates/graphite-health.json.tpl")}"
+#
+#  vars {
+#    statsd_ip        = "${var.statsd_ip}"
+#  }
+#}
 
 # TLS CA Bundle
 
@@ -130,15 +130,15 @@ resource "docker_container" "consul_oss_server_0" {
   #   gelf-address = "udp://${var.log_server_ip}:5114"
   # }
 
-  upload = {
-    content = "${data.template_file.graphite_service_definitiion.rendered}"
-    file    = "/consul/config/graphite-health.json"
-  }
-
-  upload = {
-    content = "${data.template_file.graphite_health_check_definition.rendered}"
-    file    = "/consul/config/graphite-service.json"
-  }
+#  upload = {
+#    content = "${data.template_file.graphite_service_definitiion.rendered}"
+#    file    = "/consul/config/graphite-health.json"
+#  }
+#
+#  upload = {
+#    content = "${data.template_file.graphite_health_check_definition.rendered}"
+#    file    = "/consul/config/graphite-service.json"
+#  }
 
   upload = {
     content = "${data.template_file.consul_oss_server_common_config.rendered}"

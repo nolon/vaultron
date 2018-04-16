@@ -30,5 +30,5 @@ plugin_directory = "/vault/plugins"
 
 # statsd
 telemetry {
-  statsd_address = "${statsd_ip}:8125"
+  statsd_address = "${statsd_exporter_ip}:9125"
 }

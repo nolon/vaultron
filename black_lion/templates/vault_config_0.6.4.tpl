@@ -16,3 +16,8 @@ backend "consul" {
   tls_ca_file  = "/etc/ssl/certs/ca-bundle.pem"
   path = "vault/"
 }
+
+# statsd
+telemetry {
+  statsd_address = "${statsd_exporter_ip}:9125"
+}

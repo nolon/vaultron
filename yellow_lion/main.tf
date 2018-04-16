@@ -1,99 +1,97 @@
 #############################################################################
 # Yellow Lion
 # Vault telemetry stack
-# statsd, graphite, Grafana
+# statsd_exporter, graphite, Prometheus
 #############################################################################
 
 # Variables
 
-variable "grafana_version" {}
-variable "statsd_version" {}
+variable "prometheus_version" {}
+variable "statsd_exporter_version" {}
 
-# statsd/graphite image and container
+# statsd_exporter configuration
 
-resource "docker_image" "statsd" {
-  name         = "graphiteapp/graphite-statsd:${var.statsd_version}"
+data "template_file" "statsd_mapping_config" {
+  template = "${file("${path.module}/templates/vault-statds-mapping.yml.tpl")}"
+}
+
+# statsd_exporter image and container
+
+resource "docker_image" "statsd_exporter" {
+  name         = "prom/statsd-exporter:${var.statsd_exporter_version}"
   keep_locally = true
 }
 
-resource "docker_container" "statsd_graphite" {
-  name  = "vaultron_statsd"
-  image = "${docker_image.statsd.latest}"
+resource "docker_container" "statsd_exporter" {
+  name  = "vaultron_statsd_exporter"
+  image = "${docker_image.statsd_exporter.latest}"
+  command = ["-statsd.mapping-config=/statsd-mapping-config.yml"]
   must_run = true
   restart = "always"
 
+  upload = {
+    content = "${data.template_file.statsd_mapping_config.rendered}"
+    file    = "/statsd-mapping-config.yml"
+  }
+
   ports {
-    internal = "80"
-    external = "80"
+    internal = "9102"
+    external = "9102"
     protocol = "tcp"
   }
 
   ports {
-    internal = "2003"
-    external = "2003"
+    internal = "9125"
+    external = "9125"
     protocol = "tcp"
   }
 
   ports {
-    internal = "2004"
-    external = "2004"
-    protocol = "tcp"
-  }
-
-  ports {
-    internal = "2023"
-    external = "2023"
-    protocol = "tcp"
-  }
-
-  ports {
-    internal = "2024"
-    external = "2024"
-    protocol = "tcp"
-  }
-
-  ports {
-    internal = "8125"
-    external = "8125"
+    internal = "9125"
+    external = "9125"
     protocol = "udp"
   }
 
-  ports {
-    internal = "8126"
-    external = "8126"
-    protocol = "tcp"
+}
+
+# Prometheus configuration
+
+data "template_file" "prometheus_config" {
+  template = "${file("${path.module}/templates/vaultron_prometheus_config.yml.tpl")}"
+    vars {
+    statsd_exporter_ip = "${docker_container.statsd_exporter.ip_address}"
   }
-
 }
 
-output "statsd_ip" {
-  value = "${docker_container.statsd_graphite.ip_address}"
-}
+# Prometheus image and container
 
-# Grafana image and container
-
-resource "docker_image" "grafana" {
-  name         = "grafana/grafana:${var.grafana_version}"
+resource "docker_image" "prometheus" {
+  name         = "prom/prometheus:${var.prometheus_version}"
   keep_locally = true
 }
 
-# Grafana container resource
-resource "docker_container" "grafana" {
-  name  = "vaultron_grafana"
-  image = "${docker_image.grafana.latest}"
-  env   = ["GF_SECURITY_ADMIN_PASSWORD=vaultron"]
-  env   = ["GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource"]
+# Prometheus container resource
+resource "docker_container" "prometheus" {
+  name  = "vaultron_prometheus"
+  image = "${docker_image.prometheus.latest}"
+
+  command = ["--config.file=/prometheus-data/prometheus.yml"]
+
+  upload = {
+    content = "${data.template_file.prometheus_config.rendered}"
+    file    = "/prometheus-data/prometheus.yml"
+  }
 
   volumes {
-    host_path      = "${path.module}/../../../grafana/data"
-    container_path = "/var/lib/grafana"
+    host_path      = "${path.module}/../../../prometheus/data"
+    container_path = "/prometheus-data/"
   }
 
   must_run = true
 
   ports {
-    internal = "3000"
-    external = "3000"
+    internal = "9090"
+    external = "9090"
     protocol = "tcp"
   }
 }
