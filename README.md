@@ -22,6 +22,21 @@ Some of the more popular uses of Vaultron are:
 
 Terraform assembles individual pieces to form Vaultron from the official [Vault Docker image](https://hub.docker.com/_/vault/) and [Consul Docker image](https://hub.docker.com/_/consul/).
 
+### Prerequisites
+
+To fully make use of Vaultron, you need the following software installed:
+
+- Docker
+- Vault
+  - Download from https://releases.hashicorp.com/vault/ unzip, and copy `vault` to a folder in your `PATH`
+  - or `brew install vault`
+- Consul
+  - Download from https://releases.hashicorp.com/consul/ unzip, and copy `consul` to a folder in your `PATH`
+  - or `brew install consul`
+- Terraform
+  - Download from https://releases.hashicorp.com/terraform/ unzip, and copy `terraform` to a folder in your `PATH`
+  - or `brew install terraform`
+
 ### Quickest Start for macOS
 
 Once you have installed Consul, Terraform, Vault and Docker on your Mac, you can use the following example to form Vaultron and open the the Vault web UI in your browser.
