@@ -15,7 +15,7 @@ provider "vault" {}
 # -----------------------------------------------------------------------
 
 variable "datacenter_name" {
-  default = "arus"
+  default = "ecp"
 }
 
 # -----------------------------------------------------------------------
@@ -47,27 +47,21 @@ resource "vault_auth_backend" "vaultron_cert" {
   description = "Vaultron example X.509 certificate auth method"
 }
 
-resource "vault_auth_backend" "vaultron_userpass" {
+resource "vault_auth_backend" "userpass" {
   type        = "userpass"
-  path        = "vaultron-userpass"
-  description = "Vaultron example Username and password auth method"
+  path        = "userpass"
+  description = "Username and password auth method"
 }
 
-resource "vault_auth_backend" "vaultron_ldap" {
+resource "vault_auth_backend" "ldap" {
   type        = "ldap"
-  path        = "vaultron-ldap"
-  description = "Vaultron example LDAP auth method"
+  path        = "ldap"
+  description = "LDAP auth method"
 }
 
 # -----------------------------------------------------------------------
 # Secrets Engines Resources
 # -----------------------------------------------------------------------
-
-resource "vault_mount" "vaultron_db" {
-  path        = "vaultron-database"
-  type        = "database"
-  description = "Vaultron example Database secrets engine"
-}
 
 resource "vault_mount" "vaultron_kv" {
   path        = "vaultron-kv"
@@ -75,92 +69,54 @@ resource "vault_mount" "vaultron_kv" {
   description = "Vaultron example KV version 1 secrets engine"
 }
 
-resource "vault_mount" "vaultron_kv_v2" {
-  path        = "vaultron-kv-v2"
+resource "vault_mount" "kv_v2" {
+  path        = "kv-v2"
   type        = "kv-v2"
-  description = "Vaultron example KV version 2 secrets engine"
+  description = "KV version 2 secrets engine"
 }
 
-resource "vault_mount" "vaultron_aws" {
-  path        = "vaultron-aws"
-  type        = "aws"
-  description = "Vaultron example AWS secrets engine"
-}
-
-resource "vault_mount" "vaultron_consul" {
-  path        = "vaultron-consul"
-  type        = "consul"
-  description = "Vaultron example Consul secrets engine"
-}
-
-resource "vault_mount" "vaultron_pki_root" {
-  path        = "vaultron-root-pki"
+resource "vault_mount" "pki_root" {
+  path        = "root-pki-2030"
   type        = "pki"
-  description = "Vaultron example PKI secrets engine (for root CA)"
+  description = "PKI secrets engine (for root CA)"
 }
 
-resource "vault_mount" "vaultron_pki_int" {
-  path        = "vaultron-int-pki"
+resource "vault_mount" "pki_int-2025" {
+  path        = "int-pki-2025"
   type        = "pki"
-  description = "Vaultron example PKI secrets engine (for int CA)"
+  description = "PKI secrets engine (for int CA)"
 }
 
-resource "vault_mount" "vaultron_rabbitmq" {
-  path        = "vaultron-rabbitmq"
-  type        = "rabbitmq"
-  description = "Vaultron example RbbitMQ secrets engine"
-}
-
-resource "vault_mount" "vaultron_transit" {
-  path        = "vaultron-transit"
+resource "vault_mount" "transit" {
+  path        = "transit"
   type        = "transit"
-  description = "Vaultron example Transit secrets engine"
+  description = "Transit secrets engine"
 }
 
-resource "vault_mount" "vaultron_ssh_host_signer" {
-  path        = "vaultron-ssh-host-signer"
+resource "vault_mount" "ssh_host_signer" {
+  path        = "ssh-host-signer"
   type        = "ssh"
-  description = "Vaultron example SSH Secrets Engine (host)"
+  description = "SSH Secrets Engine (host)"
 }
 
-resource "vault_mount" "vaultron_ssh_client_signer" {
-  path        = "vaultron-ssh-client-signer"
+resource "vault_mount" "ssh_client_signer" {
+  path        = "ssh-client-signer"
   type        = "ssh"
-  description = "Vaultron example SSH Secrets Engine (client)"
-}
-
-resource "vault_mount" "vaultron_totp" {
-  path        = "vaultron-totp"
-  type        = "totp"
-  description = "Vaultron example TOTP Secrets Engine"
+  description = "SSH Secrets Engine (client)"
 }
 
 # -----------------------------------------------------------------------
 # Policy Resources
 # -----------------------------------------------------------------------
 
-resource "vault_policy" "vaultron_wildcard" {
+resource "vault_policy" "wildcard" {
   name = "wildcard"
 
   policy = <<EOT
-// Vaultron example policy: "vaultron-wildcard"
+// Vaultron example policy: "wildcard"
 path "*" {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
 }
-EOT
-}
-
-resource "vault_policy" "vaultron_example_root_ns" {
-  name = "vaultron-example-root-ns"
-
-  policy = <<EOT
-// Vaultron example policy: "example root namespace"
-# Manage namespaces
-
-path "sys/namespaces/*" {
-  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-}
-
 # Manage policies via API
 path "sys/policies/*" {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
@@ -194,57 +150,6 @@ path "identity/*" {
 # Manage tokens
 path "auth/token/*" {
   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-}
-
-# Manage KV secrets
-path "kv/*" {
-  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-}
-EOT
-}
-
-resource "vault_policy" "vaultron_example_namespace_ns" {
-  name = "vaultron-example-namespace-ns"
-
-  policy = <<EOT
-  # Manage Vaultron namespaces
-path "sys/namespaces/vaultron/*" {
-  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-}
-
-# Manage policies via API
-path "sys/policies/*" {
-   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-}
-
-# Manage policies via CLI
-path "sys/policy/*" {
-   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
-}
-
-# List policies via CLI
-path "sys/policy" {
-   capabilities = ["read", "update", "list"]
-}
-
-# Enable and manage secrets engines
-path "sys/mounts/*" {
-   capabilities = ["create", "read", "update", "delete", "list"]
-}
-
-# List available secret engines
-path "sys/mounts" {
-  capabilities = [ "read" ]
-}
-
-# Create and manage entities and groups
-path "identity/*" {
-   capabilities = ["create", "read", "update", "delete", "list"]
-}
-
-# Manage tokens
-path "auth/token/*" {
-   capabilities = ["create", "read", "update", "delete", "list", "sudo"]
 }
 EOT
 }
